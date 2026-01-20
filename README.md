@@ -37,10 +37,10 @@
 - **实时天气**：显示当前城市温度和天气状况，点击查看3天天气预报，支持城市切换和智能定位
 
 #### 常规界面
-![image](https://github.com/user-attachments/assets/dd0cad75-11ce-4691-804f-b4dff5ae2cde)
+![](https://cdn.nodeimage.com/i/tbwSx1EQVGXp6gDSr4Rk7WTkOoGfAxUg.webp)
 
 #### 设置界面
-![image](https://github.com/user-attachments/assets/dc91458a-840c-41f9-9e50-261471320f81)
+![OccEXtH7Dvq9KJWOMsTuN0MgoJrlgpDd.webp](https://cdn.nodeimage.com/i/OccEXtH7Dvq9KJWOMsTuN0MgoJrlgpDd.webp)
 
 
 
