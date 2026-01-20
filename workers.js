@@ -584,7 +584,7 @@ const HTML_CONTENT = `
         transform: translateY(-50%);
         align-items: center;
         gap: 15px;
-        z-index: 900;
+        z-index: 2001; /* 修改：提高层级，使其位于遮罩层之上，确保弹窗打开时仍可点击 */
     }
 
     .round-btn {
@@ -892,7 +892,7 @@ const HTML_CONTENT = `
         to { opacity: 1; transform: translateY(0); }
     }
 
-/* 修复：添加 box-sizing 防止宽度溢出 */
+    /* 修复：添加 box-sizing 防止宽度溢出 */
     #dialog-box input, #dialog-box select {
         width: 100%;
         margin-bottom: 15px;
@@ -1131,22 +1131,6 @@ const HTML_CONTENT = `
     body.dark-theme .card-url {
         color: #a0a0a0;
     }
-
-    .private-tag {
-        background-color: #ff9800;
-        color: white;
-        font-size: 10px;
-        padding: 2px 5px;
-        border-radius: 3px;
-        position: absolute;
-        top: 18px;
-        right: 5px;
-        z-index: 5;
-    }
-
-
-
-
 
     /* 版权信息样式 */
     #copyright {
@@ -1895,13 +1879,30 @@ const HTML_CONTENT = `
     .category-add-btn { order: 3; }
     .category-manage-btn { order: 4; }
 
-    /* 分类管理按钮激活状态 */
-    .category-manage-btn.active {
+    /* 按钮激活状态 - 红色 (第2、4、6个：编辑/管理功能) */
+    .category-manage-btn.active,
+    .remove-btn.active,
+    .search-manage-btn.active {
         background-color: #e74c3c;
     }
 
-    .category-manage-btn.active:hover {
+    .category-manage-btn.active:hover,
+    .remove-btn.active:hover,
+    .search-manage-btn.active:hover {
         background-color: #c0392b;
+    }
+
+    /* 按钮激活状态 - 黑色 (第1、3、5个：添加功能) */
+    .add-btn.active,
+    .category-add-btn.active,
+    .search-add-btn.active {
+        background-color: #333333;
+    }
+
+    .add-btn.active:hover,
+    .category-add-btn.active:hover,
+    .search-add-btn.active:hover {
+        background-color: #000000;
     }
 
     /* 卡片描述样式 */
@@ -2252,8 +2253,8 @@ const HTML_CONTENT = `
                 <select id="category-select"></select>
                 
                 <div class="private-link-container">
-                    <label for="private-checkbox">私密链接</label>
-                    <input type="checkbox" id="private-checkbox">
+                    <label for="public-checkbox">公开链接</label>
+                    <input type="checkbox" id="public-checkbox">
                 </div>
                 <div class="dialog-buttons">
                     <button type="button" class="dialog-cancel-btn" id="dialog-cancel-btn">取消</button>
@@ -2439,6 +2440,13 @@ const HTML_CONTENT = `
 
     // 显示添加对话框
     function showAddSearchEngineDialog() {
+        // 切换逻辑
+        const dialog = document.getElementById('add-search-dialog');
+        if (dialog.style.display === 'flex') {
+            closeAddSearchDialog();
+            return;
+        }
+
         editingEngineIndex = -1; // 重置为添加模式
         // 动态修改标题
         const titleEl = document.querySelector('#add-search-dialog .dialog-title');
@@ -2449,6 +2457,8 @@ const HTML_CONTENT = `
         
         // 显示添加框
         document.getElementById('add-search-dialog').style.display = 'flex';
+        // 激活按钮变黑
+        document.querySelector('.search-add-btn').classList.add('active');
     }
 
     // 显示编辑对话框
@@ -2471,11 +2481,12 @@ const HTML_CONTENT = `
     // 关闭添加/编辑对话框
     function closeAddSearchDialog() {
         document.getElementById('add-search-dialog').style.display = 'none';
+        // 移除按钮激活状态
+        document.querySelector('.search-add-btn').classList.remove('active');
         
-        // 关键修改：如果是从编辑模式取消的，要恢复显示管理列表
+        // 如果是从编辑模式取消的，要恢复显示管理列表
         if (editingEngineIndex >= 0) {
              document.getElementById('manage-search-dialog').style.display = 'flex';
-             // 可以在这里重置 index，也可以保留到下次进入
              editingEngineIndex = -1; 
         }
     }
@@ -2528,10 +2539,14 @@ const HTML_CONTENT = `
     function showManageSearchEnginesDialog() {
         renderManageSearchList();
         document.getElementById('manage-search-dialog').style.display = 'flex';
+        // 新增：按钮变红
+        document.querySelector('.search-manage-btn').classList.add('active');
     }
 
     function closeManageSearchDialog() {
         document.getElementById('manage-search-dialog').style.display = 'none';
+        // 新增：按钮恢复绿色
+        document.querySelector('.search-manage-btn').classList.remove('active');
     }
 
     // 渲染管理列表（包含编辑按钮）
@@ -2651,7 +2666,23 @@ const HTML_CONTENT = `
         if (!await validateToken()) {
             return;
         }
+
+        // 切换逻辑：如果分类对话框已打开，则模拟点击取消来关闭它
+        const dialog = document.getElementById('category-dialog');
+        if (dialog.style.display === 'flex') {
+            document.getElementById('category-cancel-btn').click();
+            return;
+        }
+
+        // 激活按钮变黑
+        const btn = document.querySelector('.category-add-btn');
+        if(btn) btn.classList.add('active');
+
         const categoryName = await showCategoryDialog('请输入新分类名称');
+        
+        // 对话框关闭后，恢复按钮颜色
+        if(btn) btn.classList.remove('active');
+
         if (categoryName && !categories[categoryName]) {
             categories[categoryName] = [];
             updateCategorySelect();
@@ -3248,13 +3279,6 @@ const HTML_CONTENT = `
         card.appendChild(cardTop);
         card.appendChild(url);
 
-        if (link.isPrivate) {
-            const privateTag = document.createElement('div');
-            privateTag.className = 'private-tag';
-            privateTag.textContent = '私密';
-            card.appendChild(privateTag);
-        }
-
         const correctedUrl = link.url.startsWith('http://') || link.url.startsWith('https://') ? link.url : 'http://' + link.url;
 
         if (!isAdmin) {
@@ -3383,7 +3407,8 @@ const HTML_CONTENT = `
         const tips = document.getElementById('tips-input').value.trim();
         const icon = document.getElementById('icon-input').value.trim();
         const category = document.getElementById('category-select').value;
-        const isPrivate = document.getElementById('private-checkbox').checked;
+        // 修改：如果勾选了公开，则 isPrivate 为 false
+        const isPrivate = !document.getElementById('public-checkbox').checked;
 
         // 验证必填字段
         if (!name || !url || !category) {
@@ -3445,7 +3470,7 @@ const HTML_CONTENT = `
         document.getElementById('url-input').value = '';
         document.getElementById('tips-input').value = '';
         document.getElementById('icon-input').value = '';
-        document.getElementById('private-checkbox').checked = false;
+        document.getElementById('public-checkbox').checked = false;
         hideAddDialog();
 
         logAction('添加卡片', { name, url, tips, icon, category, isPrivate });
@@ -3912,7 +3937,6 @@ const HTML_CONTENT = `
                 await reloadCardsAsAdmin();
                 logAction('进入设置');
                 hideLoading();
-                // 已删除：进入设置时的提示弹窗
             } finally {
                 hideLoading();
             }
@@ -3922,11 +3946,9 @@ const HTML_CONTENT = `
             isRemoveCategoryMode = false;
             isEditCategoryMode = false;
 
-            // 重置分类管理按钮状态
-            const manageButton = document.querySelector('.category-manage-btn');
-            if (manageButton) {
-                manageButton.classList.remove('active');
-            }
+            // --- 新增：重置所有按钮颜色状态 ---
+            document.querySelectorAll('.round-btn').forEach(btn => btn.classList.remove('active'));
+            // -------------------------------
 
             addRemoveControls.style.display = 'none';
             // 隐藏搜索引擎管理按钮
@@ -3934,7 +3956,6 @@ const HTML_CONTENT = `
             document.querySelector('.search-manage-btn').style.display = 'none';
             await reloadCardsAsAdmin();
             logAction('离开设置');
-            // 已删除：离开设置时的提示弹窗
         }
 
         updateLoginButton();
@@ -3963,7 +3984,8 @@ const HTML_CONTENT = `
         document.getElementById('tips-input').value = link.tips || '';
         document.getElementById('icon-input').value = link.icon || '';
         document.getElementById('category-select').value = link.category;
-        document.getElementById('private-checkbox').checked = link.isPrivate;
+        // 修改：如果 isPrivate 为 false，则说明是公开链接，勾选框应被选中
+        document.getElementById('public-checkbox').checked = !link.isPrivate;
 
         const confirmBtn = document.getElementById('dialog-confirm-btn');
         const cancelBtn = document.getElementById('dialog-cancel-btn');
@@ -3999,14 +4021,24 @@ const HTML_CONTENT = `
 
     // 显示添加链接对话框
     function showAddDialog() {
+        // 切换逻辑：如果已经打开，则关闭
+        const overlay = document.getElementById('dialog-overlay');
+        if (overlay.style.display === 'flex') {
+            hideAddDialog();
+            return;
+        }
+
         document.getElementById('dialog-overlay').style.display = 'flex';
+        // 激活按钮变黑
+        document.querySelector('.add-btn').classList.add('active');
 
         const nameInput = document.getElementById('name-input');
         nameInput.value = '';
         document.getElementById('url-input').value = '';
         document.getElementById('tips-input').value = '';
         document.getElementById('icon-input').value = '';
-        document.getElementById('private-checkbox').checked = false;
+        // 修改：默认不勾选公开，即默认为私密
+        document.getElementById('public-checkbox').checked = false;
 
         const confirmBtn = document.getElementById('dialog-confirm-btn');
         const cancelBtn = document.getElementById('dialog-cancel-btn');
@@ -4053,7 +4085,8 @@ const HTML_CONTENT = `
         const tips = document.getElementById('tips-input').value.trim();
         const icon = document.getElementById('icon-input').value.trim();
         const category = document.getElementById('category-select').value;
-        const isPrivate = document.getElementById('private-checkbox').checked;
+        // 修改：如果勾选了公开，则 isPrivate 为 false
+        const isPrivate = !document.getElementById('public-checkbox').checked;
 
         // 验证必填字段
         if (!name || !url || !category) {
@@ -4121,6 +4154,8 @@ const HTML_CONTENT = `
     // 隐藏添加链接对话框
     function hideAddDialog() {
         document.getElementById('dialog-overlay').style.display = 'none';
+        // 移除按钮激活状态
+        document.querySelector('.add-btn').classList.remove('active');
 
         // 清理事件处理器
         const confirmBtn = document.getElementById('dialog-confirm-btn');
@@ -4144,6 +4179,18 @@ const HTML_CONTENT = `
     // 切换编辑卡片模式
     function toggleRemoveMode() {
         removeMode = !removeMode;
+        
+        // --- 新增：按钮变色逻辑 ---
+        const btn = document.querySelector('.remove-btn');
+        if (btn) {
+            if (removeMode) {
+                btn.classList.add('active'); // 激活变红
+            } else {
+                btn.classList.remove('active'); // 恢复绿色
+            }
+        }
+        // -----------------------
+
         const editButtons = document.querySelectorAll('.edit-btn');
         const deleteButtons = document.querySelectorAll('.delete-btn');
 
@@ -4169,7 +4216,6 @@ const HTML_CONTENT = `
 
         logAction('切换编辑卡片模式', { removeMode });
     }
-
 
 
     // 切换主题
