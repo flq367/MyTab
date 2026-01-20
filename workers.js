@@ -4,8 +4,8 @@ const HTML_CONTENT = `
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Card Tab</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2280%22>⭐</text></svg>">
+    <title>MyTab</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%2343b883%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22><path d=%22M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z%22/></svg>">
     <style>
     /* 全局样式 */
     body {
@@ -670,10 +670,15 @@ const HTML_CONTENT = `
     .search-bar select {
         border: none;
         background-color: #f4f7fa;
-        padding: 10px 15px;
+        /* 修改：右侧增加padding防止文字挡住下拉箭头，左侧微调 */
+        padding: 10px 30px 10px 15px;
         font-size: 14px;
         color: #43b883;
-        width: 120px;
+        /* 修改：宽度增加到 155px，彻底解决 DuckDuckGo 拥挤的问题 */
+        width: 155px;
+        /* 修改：让文字在框内水平居中 */
+        text-align: center;
+        text-align-last: center;
         outline: none;
         -webkit-appearance: none;
         -moz-appearance: none;
@@ -887,6 +892,7 @@ const HTML_CONTENT = `
         to { opacity: 1; transform: translateY(0); }
     }
 
+/* 修复：添加 box-sizing 防止宽度溢出 */
     #dialog-box input, #dialog-box select {
         width: 100%;
         margin-bottom: 15px;
@@ -895,6 +901,26 @@ const HTML_CONTENT = `
         border-radius: 5px;
         font-size: 14px;
         transition: all 0.3s ease;
+        box-sizing: border-box; 
+    }
+
+    /* 新增：私密链接单行显示布局 */
+    .private-link-container {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+
+    #dialog-box .private-link-container label {
+        margin-bottom: 0;
+        margin-right: 10px; /* 文字后空一格 */
+        width: auto;
+    }
+
+    #dialog-box .private-link-container input {
+        width: auto; /* 复选框恢复默认宽度 */
+        margin-bottom: 0;
+        cursor: pointer;
     }
 
     #dialog-box input:focus, #dialog-box select:focus {
@@ -1962,7 +1988,108 @@ const HTML_CONTENT = `
     body.dark-theme .delete-btn {
         background: #e74c3c;
     }
+/* 搜索引擎管理列表样式 */
+    .search-engine-list {
+        max-height: 300px;
+        overflow-y: auto;
+        margin: 10px 0;
+        border: 1px solid #e0e0e0;
+        border-radius: 5px;
+    }
+    
+    .search-engine-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 12px;
+        border-bottom: 1px solid #f0f0f0;
+        background-color: #fff;
+    }
+    
+    .search-engine-item:last-child {
+        border-bottom: none;
+    }
+    
+    .search-engine-info {
+        display: flex;
+        flex-direction: column; /* 垂直排列 */
+        justify-content: center;
+        overflow: hidden; /* 关键：限制宽度以触发截断 */
+        flex: 1;
+        margin-right: 15px;
+    }
 
+    .search-engine-name {
+        font-weight: bold;
+        font-size: 14px;
+        color: #333;
+        margin-bottom: 4px;
+    }
+    
+    .search-engine-url {
+        font-size: 12px;
+        color: #999;
+        margin-left: 0; /* 修复：移除左边距，实现左对齐 */
+        white-space: nowrap;      /* 强制单行 */
+        overflow: hidden;         /* 隐藏超出内容 */
+        text-overflow: ellipsis;  /* 显示省略号 */
+    }
+
+    /* 暗色模式适配 */
+    body.dark-theme .search-engine-name { color: #e3e3e3; }
+    
+    .search-engine-actions {
+        display: flex;
+        gap: 5px;
+    }
+    
+    .search-action-btn {
+        padding: 4px;
+        border: none;
+        background: none;
+        cursor: pointer;
+        color: #666;
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .search-action-btn:hover {
+        background-color: #f0f0f0;
+        color: #43b883;
+    }
+    
+    .search-action-btn.delete:hover {
+        color: #e74c3c;
+        background-color: #ffebee;
+    }
+
+    body.dark-theme .search-engine-list {
+        border-color: #444;
+    }
+    
+    body.dark-theme .search-engine-item {
+        background-color: #2d3748;
+        border-bottom-color: #444;
+    }
+    
+    body.dark-theme .search-engine-info {
+        color: #e3e3e3;
+    }
+    
+    body.dark-theme .search-action-btn {
+        color: #a0a0a0;
+    }
+    
+    body.dark-theme .search-action-btn:hover {
+        background-color: #3c4658;
+    }
+
+    /* 按钮排序控制 - 新增 */
+    .search-add-btn { order: 5; }
+    .search-manage-btn { order: 6; }
+    
     /* 自定义提示框样式 */
     #custom-tooltip {
         position: absolute;
@@ -2009,13 +2136,8 @@ const HTML_CONTENT = `
 
 <body>
     <div class="fixed-elements">
-        <h3><span class="weather-mini" id="weather-mini" onclick="openWeatherModal()"><span class="weather-loading">加载中...</span></span></h3>
+        <h3></h3>
         <div class="center-content">
-            <!-- 一言模块 -->
-            <p id="hitokoto">
-                <a href="#" id="hitokoto_text"></a>
-            </p>
-            <script src="https://v1.hitokoto.cn/?encode=js&select=%23hitokoto" defer></script>
             <!-- 搜索栏 -->
             <div class="search-container">
                 <div class="search-bar">
@@ -2025,8 +2147,8 @@ const HTML_CONTENT = `
                         <option value="google">谷歌</option>
                         <option value="duckduckgo">DuckDuckGo</option>
                     </select>
-                    <input type="text" id="search-input" placeholder="">
-                    <button id="search-button">🔍</button>
+                    <input type="text" id="search-input" name="search-query-field" role="searchbox" autocomplete="one-time-code" placeholder="">
+                    <button id="search-button" type="button">🔍</button>
                 </div>
             </div>
             <div id="category-buttons-container" class="category-buttons-container"></div>
@@ -2035,11 +2157,6 @@ const HTML_CONTENT = `
         <div class="top-right-controls">
             <button class="admin-btn" id="admin-btn" onclick="toggleAdminMode()" style="display: none;">设置</button>
             <button class="login-btn" id="login-btn" onclick="handleLoginClick()">登录</button>
-            <button class="github-btn has-tooltip tooltip-bottom tooltip-green" onclick="openGitHub()" data-tooltip="喜欢请点个star">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-                </svg>
-            </button>
             <div class="bookmark-search-toggle" onclick="toggleBookmarkSearch()">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="11" cy="11" r="8"></circle>
@@ -2084,6 +2201,23 @@ const HTML_CONTENT = `
                     <path d="M24 21v3m0 8v3m4.8-12-2.1 2.1M20.8 31l-2.1 2.1M19 23l2.1 2.1M27 31l2.1 2.1M17 28h3M28 28h3" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
             </button>
+            <button class="round-btn search-add-btn" onclick="showAddSearchEngineDialog()" title="添加搜索引擎" style="display: none;">
+                <svg viewBox="0 0 24 24" width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    <line x1="11" y1="8" x2="11" y2="14"></line>
+                    <line x1="8" y1="11" x2="14" y2="11"></line>
+                </svg>
+            </button>
+
+            <button class="round-btn search-manage-btn" onclick="showManageSearchEnginesDialog()" title="管理搜索引擎" style="display: none;">
+                <svg viewBox="0 0 24 24" width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    <path d="M10.5 5.5l.5-.5.5.5"></path>
+                    <path d="M11 11V5"></path>
+                </svg>
+            </button>
         </div>
 
 
@@ -2103,22 +2237,27 @@ const HTML_CONTENT = `
         <div id="dialog-overlay">
             <div id="dialog-box">
                 <label for="name-input">名称</label>
-                <input type="text" id="name-input" placeholder="必填">
+                <input type="text" id="name-input" name="bookmark_name_field" autocomplete="off" placeholder="必填">
+                
                 <label for="url-input">地址</label>
-                <input type="text" id="url-input" placeholder="必填">
+                <input type="text" id="url-input" name="bookmark_url_field" autocomplete="off" placeholder="必填">
+                
                 <label for="tips-input">描述</label>
-                <input type="text" id="tips-input" placeholder="可选">
+                <input type="text" id="tips-input" name="bookmark_tips_field" autocomplete="off" placeholder="可选">
+                
                 <label for="icon-input">图标</label>
-                <input type="text" id="icon-input" placeholder="可选">
+                <input type="text" id="icon-input" name="bookmark_icon_field" autocomplete="off" placeholder="可选">
+                
                 <label for="category-select">选择分类</label>
                 <select id="category-select"></select>
+                
                 <div class="private-link-container">
                     <label for="private-checkbox">私密链接</label>
                     <input type="checkbox" id="private-checkbox">
                 </div>
                 <div class="dialog-buttons">
-                    <button class="dialog-cancel-btn" id="dialog-cancel-btn">取消</button>
-                    <button class="dialog-confirm-btn" id="dialog-confirm-btn">确定</button>
+                    <button type="button" class="dialog-cancel-btn" id="dialog-cancel-btn">取消</button>
+                    <button type="button" class="dialog-confirm-btn" id="dialog-confirm-btn">确定</button>
                 </div>
             </div>
         </div>
@@ -2126,7 +2265,10 @@ const HTML_CONTENT = `
         <div id="login-modal" class="login-modal">
             <div class="login-modal-content">
                 <h3>登录</h3>
-                <input type="password" id="login-password" placeholder="请输入密码">
+                <form onsubmit="return false;" style="margin:0">
+                    <input type="text" name="fake_username" autocomplete="username" style="position:fixed; top:-9999px; left:-9999px; width:0; height:0;">
+                    <input type="password" id="login-password" name="real_password" autocomplete="current-password" placeholder="请输入密码">
+                </form>
                 <div class="login-modal-buttons">
                     <button class="cancel" onclick="hideLoginModal()">取消</button>
                     <button onclick="performLogin()">确定</button>
@@ -2167,6 +2309,30 @@ const HTML_CONTENT = `
                 </div>
             </div>
         </div>
+        
+        <div class="dialog-overlay" id="add-search-dialog" style="display: none;">
+            <div class="dialog-box">
+                <h3 class="dialog-title">添加搜索引擎</h3>
+                <input type="text" id="search-name-input" placeholder="搜索引擎名称 (如: 百度)">
+                <input type="text" id="search-url-input" placeholder="搜索URL (如: https://www.baidu.com/s?wd=)">
+                <div style="font-size: 12px; color: #888; margin-bottom: 10px;">提示: URL无需包含搜索词，程序会自动拼接。</div>
+                <div class="dialog-buttons">
+                    <button onclick="closeAddSearchDialog()" class="dialog-cancel-btn">取消</button>
+                    <button onclick="saveNewSearchEngine()" class="dialog-confirm-btn">确定</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="dialog-overlay" id="manage-search-dialog" style="display: none;">
+            <div class="dialog-box" style="width: 400px;">
+                <h3 class="dialog-title">管理搜索引擎</h3>
+                <div id="manage-search-list" class="search-engine-list">
+                    </div>
+                <div class="dialog-buttons">
+                    <button onclick="closeManageSearchDialog()" class="dialog-confirm-btn">关闭</button>
+                </div>
+            </div>
+        </div>
 
         <!-- 加载遮罩 -->
         <div id="loading-mask" style="display:none;">
@@ -2179,17 +2345,60 @@ const HTML_CONTENT = `
     <div id="custom-tooltip"></div>
 
     <script>
-    // 搜索引擎配置
-    const searchEngines = {
-        baidu: "https://www.baidu.com/s?wd=",
-        bing: "https://www.bing.com/search?q=",
-        google: "https://www.google.com/search?q=",
-        duckduckgo: "https://duckduckgo.com/?q="
-    };
+// ================= 搜索引擎逻辑重构 (开始) =================
+    
+    // 默认搜索引擎列表
+    const defaultSearchEngines = [
+        { name: "百度", url: "https://www.baidu.com/s?wd=", id: "baidu" },
+        { name: "必应", url: "https://www.bing.com/search?q=", id: "bing" },
+        { name: "谷歌", url: "https://www.google.com/search?q=", id: "google" },
+        { name: "DuckDuckGo", url: "https://duckduckgo.com/?q=", id: "duckduckgo" }
+    ];
 
-    let currentEngine = "baidu";
+    let searchEnginesList = [];
+    let currentEngineId = "baidu";
+    let editingEngineIndex = -1; // 用于标记当前是否处于编辑模式 (-1表示添加，>=0表示编辑索引)
 
-    // 日志记录函数
+    // 加载搜索引擎数据
+    function loadSearchEngines() {
+        const stored = localStorage.getItem('custom_search_engines');
+        if (stored) {
+            try {
+                searchEnginesList = JSON.parse(stored);
+            } catch (e) {
+                searchEnginesList = [...defaultSearchEngines];
+            }
+        } else {
+            searchEnginesList = [...defaultSearchEngines];
+        }
+        renderSearchEngineSelect();
+    }
+
+    // 渲染主页下拉框
+    function renderSearchEngineSelect() {
+        const select = document.getElementById('search-engine-select');
+        select.innerHTML = '';
+        
+        let foundCurrent = false;
+        searchEnginesList.forEach(engine => {
+            const option = document.createElement('option');
+            option.value = engine.id;
+            option.textContent = engine.name;
+            select.appendChild(option);
+            if (engine.id === currentEngineId) foundCurrent = true;
+        });
+
+        // 如果当前选中的引擎被删除了，重置为第一个
+        if (!foundCurrent && searchEnginesList.length > 0) {
+            currentEngineId = searchEnginesList[0].id;
+        }
+        
+        if (searchEnginesList.length > 0) {
+            select.value = currentEngineId;
+        }
+    }
+
+    // 日志记录函数 (保留)
     function logAction(action, details) {
         const timestamp = new Date().toISOString();
         const logEntry = timestamp + ': ' + action + ' - ' + JSON.stringify(details);
@@ -2197,10 +2406,11 @@ const HTML_CONTENT = `
     }
 
     // 设置当前搜索引擎
-    function setActiveEngine(engine) {
-        currentEngine = engine;
-        document.getElementById('search-engine-select').value = engine;
-        logAction('设置搜索引擎', { engine });
+    function setActiveEngine(engineId) {
+        currentEngineId = engineId;
+        localStorage.setItem('last_used_engine', engineId); // 记住选择
+        document.getElementById('search-engine-select').value = engineId;
+        logAction('设置搜索引擎', { engineId });
     }
 
     // 搜索引擎选择框变更事件
@@ -2211,9 +2421,10 @@ const HTML_CONTENT = `
     // 搜索按钮点击事件
     document.getElementById('search-button').addEventListener('click', () => {
         const query = document.getElementById('search-input').value;
-        if (query) {
-            logAction('执行搜索', { engine: currentEngine, query });
-            window.open(searchEngines[currentEngine] + encodeURIComponent(query), '_blank');
+        const engine = searchEnginesList.find(e => e.id === currentEngineId);
+        if (query && engine) {
+            logAction('执行搜索', { engine: engine.name, query });
+            window.open(engine.url + encodeURIComponent(query), '_blank');
         }
     });
 
@@ -2224,8 +2435,204 @@ const HTML_CONTENT = `
         }
     });
 
-    // 初始化搜索引擎
-    setActiveEngine(currentEngine);
+    // ----------- 搜索引擎管理功能 -----------
+
+    // 显示添加对话框
+    function showAddSearchEngineDialog() {
+        editingEngineIndex = -1; // 重置为添加模式
+        // 动态修改标题
+        const titleEl = document.querySelector('#add-search-dialog .dialog-title');
+        if (titleEl) titleEl.textContent = '添加搜索引擎';
+        
+        document.getElementById('search-name-input').value = '';
+        document.getElementById('search-url-input').value = '';
+        
+        // 显示添加框
+        document.getElementById('add-search-dialog').style.display = 'flex';
+    }
+
+    // 显示编辑对话框
+    function editSearchEngine(index) {
+        editingEngineIndex = index; // 设置当前编辑的索引
+        const engine = searchEnginesList[index];
+        
+        // 动态修改标题为“编辑”
+        const titleEl = document.querySelector('#add-search-dialog .dialog-title');
+        if (titleEl) titleEl.textContent = '编辑搜索引擎';
+
+        document.getElementById('search-name-input').value = engine.name;
+        document.getElementById('search-url-input').value = engine.url;
+        
+        // 关键修改：隐藏管理列表，显示编辑框，避免遮挡
+        document.getElementById('manage-search-dialog').style.display = 'none';
+        document.getElementById('add-search-dialog').style.display = 'flex';
+    }
+
+    // 关闭添加/编辑对话框
+    function closeAddSearchDialog() {
+        document.getElementById('add-search-dialog').style.display = 'none';
+        
+        // 关键修改：如果是从编辑模式取消的，要恢复显示管理列表
+        if (editingEngineIndex >= 0) {
+             document.getElementById('manage-search-dialog').style.display = 'flex';
+             // 可以在这里重置 index，也可以保留到下次进入
+             editingEngineIndex = -1; 
+        }
+    }
+
+    // 保存搜索引擎（兼容添加和编辑）
+    async function saveNewSearchEngine() {
+        if (!await validateToken()) return;
+        
+        const name = document.getElementById('search-name-input').value.trim();
+        const url = document.getElementById('search-url-input').value.trim();
+        
+        if (!name || !url) {
+            alert('请填写名称和URL');
+            return;
+        }
+
+        const isEditing = editingEngineIndex >= 0;
+
+        if (isEditing) {
+            // 编辑模式：更新现有数据
+            searchEnginesList[editingEngineIndex].name = name;
+            searchEnginesList[editingEngineIndex].url = url;
+        } else {
+            // 添加模式：创建新数据
+            const newEngine = {
+                name: name,
+                url: url,
+                id: 'custom_' + Date.now()
+            };
+            searchEnginesList.push(newEngine);
+        }
+
+        saveSearchEnginesToLocal();
+        renderSearchEngineSelect();
+        
+        // 关闭编辑窗口
+        document.getElementById('add-search-dialog').style.display = 'none';
+        
+        // 关键修改：如果是编辑模式保存，保存后恢复显示管理列表并刷新
+        if (isEditing) {
+            renderManageSearchList();
+            document.getElementById('manage-search-dialog').style.display = 'flex';
+            editingEngineIndex = -1; // 重置状态
+        }
+        
+        logAction(isEditing ? '编辑搜索引擎' : '添加搜索引擎', { name });
+    }
+
+    // 显示管理对话框
+    function showManageSearchEnginesDialog() {
+        renderManageSearchList();
+        document.getElementById('manage-search-dialog').style.display = 'flex';
+    }
+
+    function closeManageSearchDialog() {
+        document.getElementById('manage-search-dialog').style.display = 'none';
+    }
+
+    // 渲染管理列表（包含编辑按钮）
+    function renderManageSearchList() {
+        const listEl = document.getElementById('manage-search-list');
+        listEl.innerHTML = '';
+
+        searchEnginesList.forEach((engine, index) => {
+            const item = document.createElement('div');
+            item.className = 'search-engine-item';
+            
+            const info = document.createElement('div');
+            info.className = 'search-engine-info';
+            // 修改：使用 div 结构配合 flex 布局，实现更好的对齐和截断
+            info.innerHTML = '<div class="search-engine-name">' + engine.name + '</div><div class="search-engine-url">' + engine.url + '</div>';
+            
+            const actions = document.createElement('div');
+            actions.className = 'search-engine-actions';
+
+            // 上移按钮
+            const upBtn = document.createElement('button');
+            upBtn.className = 'search-action-btn';
+            upBtn.innerHTML = '↑';
+            upBtn.onclick = () => moveSearchEngine(index, -1);
+            if (index === 0) upBtn.style.visibility = 'hidden';
+
+            // 下移按钮
+            const downBtn = document.createElement('button');
+            downBtn.className = 'search-action-btn';
+            downBtn.innerHTML = '↓';
+            downBtn.onclick = () => moveSearchEngine(index, 1);
+            if (index === searchEnginesList.length - 1) downBtn.style.visibility = 'hidden';
+
+            // 编辑按钮
+            const editBtn = document.createElement('button');
+            editBtn.className = 'search-action-btn';
+            editBtn.innerHTML = '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>';
+            editBtn.title = '编辑';
+            editBtn.onclick = () => editSearchEngine(index);
+
+            // 删除按钮
+            const delBtn = document.createElement('button');
+            delBtn.className = 'search-action-btn delete';
+            delBtn.innerHTML = '×';
+            delBtn.title = '删除';
+            delBtn.onclick = () => deleteSearchEngine(index);
+
+            actions.appendChild(upBtn);
+            actions.appendChild(downBtn);
+            actions.appendChild(editBtn);
+            actions.appendChild(delBtn);
+            
+            item.appendChild(info);
+            item.appendChild(actions);
+            listEl.appendChild(item);
+        });
+    }
+
+    // 移动排序
+    function moveSearchEngine(index, direction) {
+        if (index + direction < 0 || index + direction >= searchEnginesList.length) return;
+        
+        const temp = searchEnginesList[index];
+        searchEnginesList[index] = searchEnginesList[index + direction];
+        searchEnginesList[index + direction] = temp;
+        
+        saveSearchEnginesToLocal();
+        renderManageSearchList();
+        renderSearchEngineSelect();
+    }
+
+    // 删除引擎
+    async function deleteSearchEngine(index) {
+        if (!await validateToken()) return;
+        if (searchEnginesList.length <= 1) {
+            alert('至少保留一个搜索引擎');
+            return;
+        }
+        
+        if (confirm('确定要删除 ' + searchEnginesList[index].name + ' 吗?')) {
+            searchEnginesList.splice(index, 1);
+            saveSearchEnginesToLocal();
+            renderManageSearchList();
+            renderSearchEngineSelect();
+        }
+    }
+
+    function saveSearchEnginesToLocal() {
+        localStorage.setItem('custom_search_engines', JSON.stringify(searchEnginesList));
+    }
+
+    // 初始化调用
+    loadSearchEngines();
+    // 恢复上次选择的引擎
+    const lastUsed = localStorage.getItem('last_used_engine');
+    if (lastUsed) {
+        setActiveEngine(lastUsed);
+    } else {
+        setActiveEngine(searchEnginesList[0].id);
+    }
+    // ================= 搜索引擎逻辑重构 (结束) =================
 
     // 全局变量
     let publicLinks = [];
@@ -3499,10 +3906,13 @@ const HTML_CONTENT = `
             try {
                 isAdmin = true;
                 addRemoveControls.style.display = 'flex';
+                // 显示搜索引擎管理按钮
+                document.querySelector('.search-add-btn').style.display = 'flex';
+                document.querySelector('.search-manage-btn').style.display = 'flex';
                 await reloadCardsAsAdmin();
                 logAction('进入设置');
                 hideLoading();
-                await customAlert('准备设置分类和书签', '设置模式');
+                // 已删除：进入设置时的提示弹窗
             } finally {
                 hideLoading();
             }
@@ -3519,9 +3929,12 @@ const HTML_CONTENT = `
             }
 
             addRemoveControls.style.display = 'none';
+            // 隐藏搜索引擎管理按钮
+            document.querySelector('.search-add-btn').style.display = 'none';
+            document.querySelector('.search-manage-btn').style.display = 'none';
             await reloadCardsAsAdmin();
             logAction('离开设置');
-            await customAlert('设置已保存', '设置完成');
+            // 已删除：离开设置时的提示弹窗
         }
 
         updateLoginButton();
