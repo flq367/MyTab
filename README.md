@@ -42,7 +42,10 @@
 #### 设置界面
 ![OccEXtH7Dvq9KJWOMsTuN0MgoJrlgpDd.webp](https://cdn.nodeimage.com/i/OccEXtH7Dvq9KJWOMsTuN0MgoJrlgpDd.webp)
 
-
+#### 搜索引擎管理界面
+![HaPKMl9ePsFAvg6d43Jh3ncIG8XPNiVq.webp](https://cdn.nodeimage.com/i/HaPKMl9ePsFAvg6d43Jh3ncIG8XPNiVq.webp)
+![Br0rEbt6kbe3iGTt34qUEYvpkSYIHs9m.webp](https://cdn.nodeimage.com/i/Br0rEbt6kbe3iGTt34qUEYvpkSYIHs9m.webp)
+![0qQCi6lLNM1Lp0vAsX5pa6nxaFVBqQYG.webp](https://cdn.nodeimage.com/i/0qQCi6lLNM1Lp0vAsX5pa6nxaFVBqQYG.webp)
 
 # 部署方法：
 #### 五步即可完成部署：
