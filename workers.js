@@ -179,6 +179,24 @@ const HTML_CONTENT = `
         background-color: #35a674;
         transform: translateY(-1px);
     }
+    
+    /* 新增：离开设置按钮变为红色 */
+    .admin-btn.exit-mode {
+        background-color: #e74c3c;
+    }
+
+    .admin-btn.exit-mode:hover {
+        background-color: #c0392b;
+    }
+
+    /* 确保暗黑模式下也是红色 */
+    body.dark-theme .admin-btn.exit-mode {
+        background-color: #e74c3c;
+    }
+
+    body.dark-theme .admin-btn.exit-mode:hover {
+        background-color: #c0392b;
+    }
 
     body.dark-theme .admin-btn {
         background-color: #5d7fb9;
@@ -510,8 +528,16 @@ const HTML_CONTENT = `
     }
 
     /* 搜索结果样式 - 简化版 */
+    /* 修改：直接在父容器添加强制的右侧内边距 */
     .search-results-section {
         margin-bottom: 30px;
+        padding-right: 75px !important; /* 使用 !important 强制生效 */
+        box-sizing: border-box;
+    }
+    
+    /* 搜索结果容器特殊样式 */
+    .search-results-section .card-container {
+        padding-right: 0 !important; /* 重置子元素的内边距，避免双重叠加 */
     }
 
     .search-results-header {
@@ -580,11 +606,11 @@ const HTML_CONTENT = `
         flex-direction: column;
         position: fixed;
         right: 20px;
-        top: 50%;
+        top: 55%; /* 修改：恢复为 50% 居中，与下方按钮留出足够距离 */
         transform: translateY(-50%);
         align-items: center;
         gap: 15px;
-        z-index: 2001; /* 修改：提高层级，使其位于遮罩层之上，确保弹窗打开时仍可点击 */
+        z-index: 2001;
     }
 
     .round-btn {
@@ -708,9 +734,10 @@ const HTML_CONTENT = `
     }
 
     body.dark-theme .search-bar select {
-        background-color: #252830;
+        background-color: #1a1d21; /* 修改：使用更深的颜色，与输入框形成对比 */
         color: #5d7fb9;
         background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="6" viewBox="0 0 12 6"><path fill="%235d7fb9" d="M0 0l6 6 6-6z"/></svg>');
+        border-right: 1px solid #323642; /* 新增：添加右侧分割线 */
     }
 
     body.dark-theme .search-bar input {
@@ -811,6 +838,19 @@ const HTML_CONTENT = `
     .category-buttons-container::-webkit-scrollbar {
         height: 4px;
     }
+    
+    /* 修复：移动端搜索结果布局优化 */
+        .search-results-section {
+            /* 关键修复：重置PC端父容器的强制右侧留白，防止内容被挤压到左边 */
+            padding-right: 0 !important; 
+        }
+
+        .search-results-section .card-container {
+            /* 保持与主页完全一致的布局：右侧留出45px给悬浮按钮，左侧12px */
+            padding-right: 45px !important; 
+            padding-left: 12px !important;
+            justify-content: center; /* 保持居中对齐 */
+        }
 
     /* 浮动按钮组样式 */
     .floating-button-group {
@@ -1056,8 +1096,10 @@ const HTML_CONTENT = `
         justify-content: start;
         padding: 15px;
         padding-left: 45px;
+        padding-right: 120px; /* 新增：右侧增加120px内边距，给悬浮按钮留出安全空间 */
         margin: 0 auto;
         max-width: 1600px;
+        box-sizing: border-box; /* 确保内边距包含在宽度计算内 */
     }
 
     .card {
@@ -1433,16 +1475,17 @@ const HTML_CONTENT = `
         .category-buttons-container {
             width: 100%;
             max-width: none;
-            padding: 6px;
+            padding: 6px 0; /* 修改：移除左右padding，增加可视宽度 */
             overflow-x: auto; /* 允许水平滚动 */
             flex-wrap: nowrap; /* 不允许按钮换行 */
             justify-content: flex-start; /* 左对齐排列按钮 */
-            margin: 8px auto 5px; /* 紧凑的分类按钮边距 */
+            margin: 5px auto; /* 修改：移除45px上边距，改为由父容器控制间距 */
             scrollbar-width: none; /* Firefox */
             -ms-overflow-style: none; /* IE and Edge */
             background-color: transparent; /* 移动端也透明 */
             border-radius: 8px;
             gap: 4px; /* 减小按钮间距 */
+            order: -1; /* 新增：将分类按钮顺序提前 */
         }
 
         body.dark-theme .category-buttons-container {
@@ -1456,7 +1499,7 @@ const HTML_CONTENT = `
         }
 
         .content {
-            margin-top: 150px; /* 增加顶部边距，适配更高的固定元素 */
+            margin-top: 160px; /* 修改：从 150px 增加到 180px，适配增高的头部区域 */
             margin-bottom: 100px; /* 为底部的分类按钮和版权信息留出空间 */
             padding: 15px; /* 保持内边距 */
             transition: opacity 0.3s ease;
@@ -1468,7 +1511,11 @@ const HTML_CONTENT = `
             transform: none; /* 取消变换 */
             width: 100%;
             text-align: center;
-            padding: 0 8px; /* 减少左右内边距 */
+            /* 修改：从 50px 增加到 70px，防止右上角按钮组（特别是添加书签按钮）遮挡分类栏 */
+            padding: 55px 8px 0 8px;
+            /* 新增：开启Flex布局以支持重新排序 */
+            display: flex;
+            flex-direction: column;
         }
 
         .loading .content {
@@ -1477,7 +1524,7 @@ const HTML_CONTENT = `
 
         /* 移动端搜索容器样式 */
         .search-container {
-            margin-top: 15px; /* 增加上边距，与右上角按钮拉开距离 */
+            margin-top: 5px; /* 修改：减少上边距，因为上方现在是分类按钮 */
         }
 
         .search-bar {
@@ -1518,66 +1565,84 @@ const HTML_CONTENT = `
 
         .card-container {
             display: grid;
-            grid-template-columns: repeat(2, minmax(140px, 1fr));
-            column-gap: 20px;
-            row-gap: 10px;
+            /* 修改：改为3列，minmax(0, 1fr) 确保平分宽度 */
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            column-gap: 10px; /* 适中的列间距 */
+            row-gap: 10px;    /* 适中的行间距 */
             justify-content: center;
-            padding: 12px;
+            /* 保持右侧避让，防止被悬浮按钮遮挡 */
+            padding: 12px 45px 12px 12px;
             margin: 0 auto;
         }
 
         .card {
             width: auto;
             max-width: 100%;
-            padding: 12px;
+            padding: 8px 6px; /* 适中的内边距，比4列时宽松 */
             margin: 0;
-            border-radius: 8px;
+            border-radius: 6px;
+            border-left-width: 3px; /* 恢复左侧线条宽度，视觉更清晰 */
+        }
+        
+        /* 新增：移动端图标样式 */
+        .card-icon {
+            width: 15px; /* 图标稍微调大 */
+            height: 15px;
+            margin-right: 4px;
+        }
+        
+        .card-top {
+            margin-bottom: 4px;
         }
 
         .card-title {
-            font-size: 13px;
+            font-size: 12px; /* 字体调大到 12px，易于阅读 */
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
             max-width: 100%;
+            font-weight: 500;
         }
 
         .card-url {
-            font-size: 11px;
+            font-size: 10px; /* URL字体调大到 10px */
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
             max-width: 100%;
+            color: #999;
+            margin-top: 0;
         }
 
         .add-remove-controls {
-            right: 5px;
+            right: 8px; /* 修改：统一右侧边距，实现垂直对齐 */
             bottom: 150px;
             top: auto;
             transform: none;
             flex-direction: column;
-            gap: 15px;
+            gap: 10px; /* 修改：减小按钮之间的垂直间距，更紧凑 */
         }
 
         .round-btn {
-            right: 10px;
+            /* 移除 right: 10px，这是导致错位的根本原因 */
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 36px;
-            height: 36px;
-            font-size: 20px;
+            width: 32px; /* 修改：缩小按钮尺寸 (36->32) */
+            height: 32px;
+            font-size: 16px; /* 修改：缩小图标 */
         }
 
         .floating-button-group {
             bottom: 20px;
-            right: 10px;
+            right: 8px; /* 修改：统一右侧边距为 8px */
+            gap: 10px;
         }
 
         .floating-button-group button {
-            width: 36px;
-            height: 36px;
-            font-size: 18px;
+            width: 32px; /* 修改：缩小按钮尺寸 (36->32) */
+            height: 32px;
+            font-size: 16px;
         }
 
         #dialog-box {
@@ -1879,16 +1944,18 @@ const HTML_CONTENT = `
     .category-add-btn { order: 3; }
     .category-manage-btn { order: 4; }
 
-    /* 按钮激活状态 - 红色 (第2、4、6个：编辑/管理功能) */
+    /* 按钮激活状态 - 红色 (编辑/管理/移动功能) */
     .category-manage-btn.active,
     .remove-btn.active,
-    .search-manage-btn.active {
+    .search-manage-btn.active,
+    .move-mode-btn.active { /* 新增 */
         background-color: #e74c3c;
     }
 
     .category-manage-btn.active:hover,
     .remove-btn.active:hover,
-    .search-manage-btn.active:hover {
+    .search-manage-btn.active:hover,
+    .move-mode-btn.active:hover {
         background-color: #c0392b;
     }
 
@@ -2090,6 +2157,7 @@ const HTML_CONTENT = `
     /* 按钮排序控制 - 新增 */
     .search-add-btn { order: 5; }
     .search-manage-btn { order: 6; }
+    .move-mode-btn { order: 7; } /* 新增：移动按钮排在第7位 */
     
     /* 自定义提示框样式 */
     #custom-tooltip {
@@ -2158,6 +2226,9 @@ const HTML_CONTENT = `
         <div class="top-right-controls">
             <button class="admin-btn" id="admin-btn" onclick="toggleAdminMode()" style="display: none;">设置</button>
             <button class="login-btn" id="login-btn" onclick="handleLoginClick()">登录</button>
+            
+            <button class="admin-btn" id="quick-add-btn" onclick="showQuickAddDialog()" style="display: none;">添加书签</button>
+            
             <div class="bookmark-search-toggle" onclick="toggleBookmarkSearch()">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="11" cy="11" r="8"></circle>
@@ -2219,9 +2290,18 @@ const HTML_CONTENT = `
                     <path d="M11 11V5"></path>
                 </svg>
             </button>
+            
+            <button class="round-btn move-mode-btn" onclick="toggleMoveMode()" title="移动书签 (开关)" style="display: none;">
+                <svg viewBox="0 0 24 24" width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="5 9 2 12 5 15"></polyline>
+                    <polyline points="9 5 12 2 15 5"></polyline>
+                    <polyline points="15 19 12 22 9 19"></polyline>
+                    <polyline points="19 15 22 12 19 9"></polyline>
+                    <line x1="2" y1="12" x2="22" y2="12"></line>
+                    <line x1="12" y1="2" x2="12" y2="22"></line>
+                </svg>
+            </button>
         </div>
-
-
 
         <!-- 分类和卡片容器 -->
         <div id="sections-container"></div>
@@ -2259,6 +2339,23 @@ const HTML_CONTENT = `
                 <div class="dialog-buttons">
                     <button type="button" class="dialog-cancel-btn" id="dialog-cancel-btn">取消</button>
                     <button type="button" class="dialog-confirm-btn" id="dialog-confirm-btn">确定</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="dialog-overlay" id="quick-add-overlay" style="display: none;">
+            <div class="dialog-box">
+                <h3 class="dialog-title">快速添加书签</h3>
+                
+                <label for="quick-url-input" style="display:block; margin-bottom:5px; font-weight:500;">网址 (URL)</label>
+                <input type="text" id="quick-url-input" class="dialog-input" placeholder="粘贴网址，如 https://..." onblur="autoFillQuickName()">
+                
+                <label for="quick-name-input" style="display:block; margin-bottom:5px; font-weight:500;">名称</label>
+                <input type="text" id="quick-name-input" class="dialog-input" placeholder="网站名称">
+                
+                <div class="dialog-buttons">
+                    <button onclick="closeQuickAddDialog()" class="dialog-cancel-btn">取消</button>
+                    <button onclick="performQuickAdd()" class="dialog-confirm-btn">确定</button>
                 </div>
             </div>
         </div>
@@ -2657,6 +2754,7 @@ const HTML_CONTENT = `
     let removeMode = false;
     let isRemoveCategoryMode = false;
     let isEditCategoryMode = false;
+    let isMoveMode = false; // 新增：移动模式开关状态
     let isDarkTheme = false;
     let links = [];
     const categories = {};
@@ -2826,6 +2924,27 @@ const HTML_CONTENT = `
         logAction('切换分类编辑模式', { isEditCategoryMode });
     }
 
+    // 新增：切换移动模式
+    function toggleMoveMode() {
+        isMoveMode = !isMoveMode;
+        
+        // 更新按钮状态
+        const btn = document.querySelector('.move-mode-btn');
+        if (btn) {
+            if (isMoveMode) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        }
+
+        // 实时更新所有卡片的 draggable 属性
+        document.querySelectorAll('.card').forEach(card => {
+            card.setAttribute('draggable', isMoveMode);
+        });
+
+        logAction('切换移动模式', { isMoveMode });
+    }
 
 
     // 渲染分类快捷按钮
@@ -2901,27 +3020,45 @@ const HTML_CONTENT = `
             return;
         }
 
+        const buttons = document.querySelectorAll('.category-button');
+        if (buttons.length === 0) return;
+
+        // Fix: 如果页面滚动在最顶部（小于50px），直接强制激活第一个分类
+        if (window.scrollY < 50) {
+            buttons.forEach(btn => btn.classList.remove('active'));
+            if (buttons[0]) {
+                buttons[0].classList.add('active');
+                // 可选：如果希望第一个按钮自动滚动到可视区域，可以开启下面这行
+                // buttons[0].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+            }
+            return;
+        }
+
         // 获取所有分类区域
         const sections = document.querySelectorAll('.section');
         if (!sections.length) return;
 
-        // 获取视窗高度
-        const viewportHeight = window.innerHeight;
-        // 考虑固定元素的高度
-        const fixedElementsHeight = 170;
-        // 计算视窗中心点
-        const viewportCenter = viewportHeight / 2 + fixedElementsHeight;
+        // 动态获取头部高度
+        const fixedHeader = document.querySelector('.fixed-elements');
+        const headerHeight = fixedHeader ? fixedHeader.offsetHeight : 150;
+        
+        // Fix: 动态调整判定点 (TargetY)
+        // 移动端：屏幕较小，焦点应更靠上 (头部下方 60px)
+        // PC端：屏幕较大，焦点可以靠下 (头部下方 150px)
+        const focusOffset = window.innerWidth <= 480 ? 60 : 150;
+        const targetY = headerHeight + focusOffset;
 
-        // 找出最接近视窗中心的分类
+        // 找出最接近目标判定点 (TargetY) 的分类
         let closestSection = null;
         let closestDistance = Infinity;
 
         sections.forEach(section => {
             const rect = section.getBoundingClientRect();
-            // 计算分类区域的中心点
+            // 计算分类区域的中心点 (相对于视窗顶部)
             const sectionCenter = rect.top + rect.height / 2;
-            // 计算到视窗中心的距离
-            const distance = Math.abs(sectionCenter - viewportCenter);
+            
+            // 计算分类中心点到我们设定的“视觉焦点”的距离
+            const distance = Math.abs(sectionCenter - targetY);
 
             if (distance < closestDistance) {
                 closestDistance = distance;
@@ -2933,7 +3070,6 @@ const HTML_CONTENT = `
             const cardContainer = closestSection.querySelector('.card-container');
             if (cardContainer && cardContainer.id) {
                 const categoryId = cardContainer.id;
-                const buttons = document.querySelectorAll('.category-button');
 
                 // 移除所有活跃状态
                 buttons.forEach(btn => btn.classList.remove('active'));
@@ -2942,6 +3078,11 @@ const HTML_CONTENT = `
                 buttons.forEach(btn => {
                     if (btn.dataset.category === categoryId) {
                         btn.classList.add('active');
+                        
+                        // 新增：自动横向滚动分类栏，确保当前高亮的标签在视野中间 (仅移动端体验优化)
+                        if (window.innerWidth <= 480) {
+                            btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                        }
                     }
                 });
             }
@@ -2966,19 +3107,24 @@ const HTML_CONTENT = `
 
     // 滚动到指定分类
     function scrollToCategory(category) {
-        const section = document.getElementById(category);
-        if (section) {
-            // 计算滚动位置，考虑顶部固定元素的高度和额外偏移量
-            let offset = 230; // 减小偏移量，确保分类标题和第一行书签完全可见
+        // 注意：这里的 ID (category) 实际上是在 card-container 元素上
+        const container = document.getElementById(category);
+        if (container) {
+            // 修改关键点：找到包含标题的父级 section 元素
+            // 这样滚动时就会把标题也包含在视野内
+            const section = container.closest('.section');
+            const targetElement = section || container;
 
-            // 检查是否为移动设备
-            if (window.innerWidth <= 480) {
-                offset = 120; // 移动设备上的偏移量
-            }
+            // 动态获取当前固定头部的高度，确保精确避让
+            const fixedHeader = document.querySelector('.fixed-elements');
+            const headerHeight = fixedHeader ? fixedHeader.offsetHeight : 150;
+            
+            // 计算偏移量：头部高度 + 15px 的视觉呼吸空间
+            let offset = headerHeight + 15;
 
-            // 滚动到分类位置
-            const sectionRect = section.getBoundingClientRect();
-            const absoluteTop = window.pageYOffset + sectionRect.top - offset;
+            // 滚动到 section 的位置（包含标题）
+            const rect = targetElement.getBoundingClientRect();
+            const absoluteTop = window.pageYOffset + rect.top - offset;
 
             // 使用平滑滚动效果
             window.scrollTo({
@@ -2986,7 +3132,7 @@ const HTML_CONTENT = `
                 behavior: 'smooth'
             });
 
-            logAction('滚动到分类', { category });
+            logAction('滚动到分类', { category, offset });
         }
     }
 
@@ -3123,6 +3269,12 @@ const HTML_CONTENT = `
             cardContainer.className = 'card-container';
             cardContainer.id = category;
 
+            // 新增：给容器添加拖拽事件，允许跨分类拖动到空白处
+            if (isAdmin) {
+                cardContainer.addEventListener('dragover', dragOverContainer);
+                cardContainer.addEventListener('drop', drop);
+            }
+
             section.appendChild(titleContainer);
             section.appendChild(cardContainer);
 
@@ -3223,7 +3375,7 @@ const HTML_CONTENT = `
     function createCard(link, container) {
         const card = document.createElement('div');
         card.className = 'card';
-        card.setAttribute('draggable', isAdmin);
+        card.setAttribute('draggable', isAdmin && isMoveMode);
         card.dataset.isPrivate = link.isPrivate;
         card.setAttribute('data-url', link.url);
 
@@ -3514,7 +3666,7 @@ const HTML_CONTENT = `
 
     // 触屏端拖拽卡片
     function touchStart(event) {
-        if (!isAdmin) {
+        if (!isAdmin || !isMoveMode) {
             return;
         }
         draggedCard = event.target.closest('.card');
@@ -3544,6 +3696,7 @@ const HTML_CONTENT = `
         const deltaY = currentY - touchStartY;
         draggedCard.style.transform = "translate(" + deltaX + "px, " + deltaY + "px)";
 
+        // 1. 尝试查找手指下的卡片
         const target = findCardUnderTouch(currentX, currentY);
         if (target && target !== draggedCard) {
             const container = target.parentElement;
@@ -3554,7 +3707,24 @@ const HTML_CONTENT = `
             } else {
                 container.insertBefore(draggedCard, target.nextSibling);
             }
+        } 
+        // 2. 新增：如果没碰到卡片，尝试查找手指下的分类容器（实现跨分类拖到空白处）
+        else {
+            const targetContainer = findContainerUnderTouch(currentX, currentY);
+            if (targetContainer && draggedCard.parentElement !== targetContainer) {
+                targetContainer.appendChild(draggedCard);
+            }
         }
+    }
+
+    // 新增：查找触点下的容器辅助函数
+    function findContainerUnderTouch(x, y) {
+        const containers = document.querySelectorAll('.card-container');
+        return Array.from(containers).find(container => {
+            const rect = container.getBoundingClientRect();
+            // 扩大一点判定范围，提升体验
+            return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom + 50;
+        });
     }
 
     function touchEnd(event) {
@@ -3583,7 +3753,7 @@ const HTML_CONTENT = `
 
     // PC端拖拽卡片
     function dragStart(event) {
-        if (!isAdmin) {
+        if (!isAdmin || !isMoveMode) {
             event.preventDefault();
             return;
         }
@@ -3594,9 +3764,24 @@ const HTML_CONTENT = `
         event.dataTransfer.effectAllowed = "move";
         logAction('开始拖拽卡片', { name: draggedCard.querySelector('.card-title').textContent });
     }
-
+    
+    // 新增：处理拖拽到容器空白处的逻辑
+    function dragOverContainer(event) {
+        if (!isAdmin || !isMoveMode) return;
+        event.preventDefault(); // 允许放置
+        
+        // 只有当拖拽目标是容器本身（即空白处），且卡片不在该容器最后时，才移动
+        if (draggedCard && event.target.classList.contains('card-container')) {
+            const container = event.target;
+            // 如果卡片当前不在此容器，或者不是最后一个，则移动到最后
+            if (draggedCard.parentElement !== container || container.lastElementChild !== draggedCard) {
+                container.appendChild(draggedCard);
+            }
+        }
+    }
+    
     function dragOver(event) {
-        if (!isAdmin) {
+        if (!isAdmin || !isMoveMode) {
             event.preventDefault();
             return;
         }
@@ -3632,7 +3817,7 @@ const HTML_CONTENT = `
 
     // PC端拖拽结束
     function drop(event) {
-        if (!isAdmin) {
+        if (!isAdmin || !isMoveMode) {
             event.preventDefault();
             return;
         }
@@ -3835,18 +4020,27 @@ const HTML_CONTENT = `
     function updateLoginButton() {
         const loginBtn = document.getElementById('login-btn');
         const adminBtn = document.getElementById('admin-btn');
+        // 获取新按钮
+        const quickAddBtn = document.getElementById('quick-add-btn');
 
         if (isLoggedIn) {
             loginBtn.textContent = '退出登录';
             adminBtn.style.display = 'inline-block';
+            // 登录后显示快速添加按钮
+            if (quickAddBtn) quickAddBtn.style.display = 'inline-block';
+            
             if (isAdmin) {
                 adminBtn.textContent = '离开设置';
+                adminBtn.classList.add('exit-mode'); // 新增：添加红色样式
             } else {
                 adminBtn.textContent = '设置';
+                adminBtn.classList.remove('exit-mode'); // 新增：移除红色样式
             }
         } else {
             loginBtn.textContent = '登录';
             adminBtn.style.display = 'none';
+            // 未登录隐藏快速添加按钮
+            if (quickAddBtn) quickAddBtn.style.display = 'none';
         }
     }
 
@@ -3934,6 +4128,7 @@ const HTML_CONTENT = `
                 // 显示搜索引擎管理按钮
                 document.querySelector('.search-add-btn').style.display = 'flex';
                 document.querySelector('.search-manage-btn').style.display = 'flex';
+                document.querySelector('.move-mode-btn').style.display = 'flex'; // 新增：显示移动按钮
                 await reloadCardsAsAdmin();
                 logAction('进入设置');
                 hideLoading();
@@ -3945,6 +4140,7 @@ const HTML_CONTENT = `
             removeMode = false;
             isRemoveCategoryMode = false;
             isEditCategoryMode = false;
+            isMoveMode = false; // 新增：重置移动模式
 
             // --- 新增：重置所有按钮颜色状态 ---
             document.querySelectorAll('.round-btn').forEach(btn => btn.classList.remove('active'));
@@ -3954,6 +4150,7 @@ const HTML_CONTENT = `
             // 隐藏搜索引擎管理按钮
             document.querySelector('.search-add-btn').style.display = 'none';
             document.querySelector('.search-manage-btn').style.display = 'none';
+            document.querySelector('.move-mode-btn').style.display = 'none'; // 新增：隐藏移动按钮
             await reloadCardsAsAdmin();
             logAction('离开设置');
         }
@@ -3962,7 +4159,136 @@ const HTML_CONTENT = `
         updateUIState();
     }
 
+    // ================= 新增功能：快速添加书签 (新版) =================
+    
+    // 1. 显示弹窗
+    async function showQuickAddDialog() {
+        if (!await validateToken()) return; // 安全检查
 
+        const overlay = document.getElementById('quick-add-overlay');
+        const urlInput = document.getElementById('quick-url-input');
+        const nameInput = document.getElementById('quick-name-input');
+
+        // 清空输入框
+        urlInput.value = '';
+        nameInput.value = '';
+        
+        // 显示弹窗
+        overlay.style.display = 'flex';
+        
+        // 自动聚焦到URL输入框
+        setTimeout(() => urlInput.focus(), 50);
+
+        // 绑定回车事件
+        urlInput.onkeydown = (e) => { if(e.key === 'Enter') performQuickAdd(); };
+        nameInput.onkeydown = (e) => { if(e.key === 'Enter') performQuickAdd(); };
+    }
+
+    // 2. 关闭弹窗
+    function closeQuickAddDialog() {
+        document.getElementById('quick-add-overlay').style.display = 'none';
+    }
+
+    // 3. 自动根据URL填充名称 (失去焦点时触发)
+    function autoFillQuickName() {
+        const url = document.getElementById('quick-url-input').value.trim();
+        const nameInput = document.getElementById('quick-name-input');
+        
+        // 如果名称已经有值，或者URL为空，则不自动填充
+        if (nameInput.value.trim() !== '' || url === '') return;
+
+        const normalizedUrl = normalizeUrl(url);
+        let name = extractDomain(normalizedUrl);
+        
+        // 简单的优化：去掉 www. 和 .com 等后缀，让名字更好看
+        if (name) {
+            // 移除末尾的顶级域名 (例如 .com, .cn, .net) - 仅作视觉优化
+            const parts = name.split('.');
+            if (parts.length > 2) {
+                 // 类似 www.google.com -> google
+                 name = parts[1]; 
+            } else if (parts.length === 2) {
+                 // 类似 google.com -> google
+                 name = parts[0];
+            }
+            // 首字母大写
+            name = name.charAt(0).toUpperCase() + name.slice(1);
+            nameInput.value = name;
+        }
+    }
+
+    // 4. 执行添加逻辑
+    async function performQuickAdd() {
+        const urlInput = document.getElementById('quick-url-input');
+        const nameInput = document.getElementById('quick-name-input');
+        
+        let url = urlInput.value.trim();
+        let name = nameInput.value.trim();
+
+        if (!url) {
+            await customAlert('请输入网址', '提示');
+            urlInput.focus();
+            return;
+        }
+
+        // 如果用户没填名称，再次尝试从URL提取
+        const normalizedUrl = normalizeUrl(url);
+        if (!name) {
+            name = extractDomain(normalizedUrl);
+            if (!name) name = "新书签";
+        }
+
+        // --- 核心添加逻辑 ---
+        const targetCategory = "我的收藏";
+        
+        // 确保“我的收藏”存在并置顶
+        if (!categories[targetCategory]) {
+            const newCategories = { [targetCategory]: [] };
+            Object.assign(newCategories, categories);
+            for (const key in categories) delete categories[key];
+            Object.assign(categories, newCategories);
+        } else {
+            // 如果已存在，强制置顶（可选）
+            const tempLinks = categories[targetCategory];
+            delete categories[targetCategory];
+            const newCategories = { [targetCategory]: tempLinks, ...categories };
+            for (const key in categories) delete categories[key];
+            Object.assign(categories, newCategories);
+        }
+
+        const newLink = { 
+            name: name, 
+            url: normalizedUrl, 
+            tips: '', // 修改：描述留空
+            icon: '', // 留空，系统会自动获取图标
+            category: targetCategory, 
+            isPrivate: true // 修改：默认为私有
+        };
+
+        // 添加到数据
+        // 修改：检测私有属性，正确添加到对应的数组末尾
+        if (newLink.isPrivate) {
+            privateLinks.push(newLink);
+        } else {
+            publicLinks.push(newLink);
+        }
+        
+        links = isLoggedIn ? [...publicLinks, ...privateLinks] : publicLinks;
+        
+        if (!categories[targetCategory]) categories[targetCategory] = [];
+        categories[targetCategory].push(newLink); // 修改：使用 push 将新书签添加到分类最后
+
+        // 保存并刷新
+        await saveLinks();
+        renderSections();
+        closeQuickAddDialog(); // 关闭弹窗
+        
+        // 修改：滚动到该分类位置，方便查看新添加的书签
+        scrollToCategory(targetCategory);
+        
+        logAction('快速添加成功', { name, url: normalizedUrl });
+    }
+    // ========================================================
 
     // 应用暗色主题
     function applyDarkTheme() {
@@ -5076,10 +5402,11 @@ async function validateServerToken(authToken, env) {
                 throw new Error('Invalid expiry format');
             }
         } else if (parts.length === 2) {
-            // 旧格式：timestamp.hash（向后兼容，使用默认30分钟）
+            // 旧格式：timestamp.hash（向后兼容，使用默认7天）
             [timestamp, hash] = parts;
             const envExpiry = parseInt(env.TOKEN_EXPIRY_MINUTES);
-            expiryMinutes = isNaN(envExpiry) ? 30 : envExpiry;
+            // 修改：将默认兜底值从 30 改为 10080
+            expiryMinutes = isNaN(envExpiry) ? 10080 : envExpiry;
         } else {
             throw new Error('Invalid token format');
         }
@@ -5356,7 +5683,8 @@ export default {
             if (isValid) {
                 // 允许的有效期白名单（分钟）：15分钟、1小时、1天、7天、30天、永久
                 const ALLOWED_EXPIRY_VALUES = [15, 60, 1440, 10080, 43200, -1];
-                const defaultExpiry = parseInt(env.TOKEN_EXPIRY_MINUTES) || 30;
+                // 修改：将默认值从 30 改为 10080 (7天)
+                const defaultExpiry = parseInt(env.TOKEN_EXPIRY_MINUTES) || 10080;
 
                 // 验证客户端传入的有效期是否在白名单中
                 let expiryMinutes = defaultExpiry;
